@@ -110,16 +110,23 @@ def mostrar_espacio_disco():
     particiones = psutil.disk_partitions()
 
     for particion in particiones:
-        uso_disco = psutil.disk_usage(particion.mountpoint)
-        
-        print(f"Partición: {particion.device}")
-        print(f"  Punto de montaje: {particion.mountpoint}")
-        print(f"  Sistema de archivos: {uso_disco.fstype}")
-        print(f"  Espacio total: {uso_disco.total / (1024 ** 3):.2f} GB")
-        print(f"  Espacio utilizado: {uso_disco.used / (1024 ** 3):.2f} GB")
-        print(f"  Espacio disponible: {uso_disco.free / (1024 ** 3):.2f} GB")
-        print(f"  Porcentaje utilizado: {uso_disco.percent}%")
-        print()
+        try:
+            uso_disco = psutil.disk_usage(particion.mountpoint)
+            
+            print(f"Partición: {particion.device}")
+            print(f"  Punto de montaje: {particion.mountpoint}")
+            print(f"  Sistema de archivos: {particion.fstype}")
+            print(f"  Espacio total: {uso_disco.total / (1024 ** 3):.2f} GB")
+            print(f"  Espacio utilizado: {uso_disco.used / (1024 ** 3):.2f} GB")
+            print(f"  Espacio disponible: {uso_disco.free / (1024 ** 3):.2f} GB")
+            print(f"  Porcentaje utilizado: {uso_disco.percent}%")
+            print()
+        except PermissionError:
+            print(f"No se puede acceder a la partición: {particion.device}. Permiso denegado.")
+        except FileNotFoundError:
+            print(f"Partición no encontrada: {particion.device}.")
+        except Exception as e:
+            print(f"Ocurrió un error al intentar acceder a la partición {particion.device}: {e}")
 
 # Función para ejecutar SFC /scannow
 def reparar_archivos_del_sistema():
