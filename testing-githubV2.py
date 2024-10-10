@@ -3,8 +3,21 @@ import psutil
 import hashlib
 import random
 import string
+import ctypes
+import sys
 
 # Funciones del menú
+
+def ejecutar_como_admin():
+    """Verifica si el script tiene permisos de administrador. Si no, intenta relanzarlo con privilegios elevados."""
+    try:
+        if not ctypes.windll.shell32.IsUserAnAdmin():
+            print("El programa no se está ejecutando con privilegios de administrador.")
+            print("Intentando relanzar el programa con permisos elevados...")
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+            sys.exit(0)  # Terminar el proceso actual, ya que se lanzará uno nuevo con privilegios elevados.
+    except Exception as e:
+        print(f"No se pudieron obtener permisos de administrador: {e}")
 
 def print_menu():
     print("1. Mostrar IP")
@@ -112,11 +125,21 @@ def mostrar_espacio_disco():
 def ejecutar_sfc():
     """Ejecuta el comando sfc /scannow para escanear y reparar archivos del sistema."""
     try:
-        print("Ejecutando sfc /scannow...")
+        print("Ejecutando sfc /scannow... Esto puede tardar un tiempo.")
+        # Ejecutar el comando con privilegios elevados.
         proceso = subprocess.run('sfc /scannow', shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        print("Resultado de SFC:\n", proceso.stdout)
+        
+        # Verificar si el comando fue exitoso
+        if proceso.returncode == 0:
+            print("El análisis de archivos del sistema se completó correctamente.")
+            print("Resultado de SFC:\n", proceso.stdout)
+        else:
+            print(f"El comando SFC no se ejecutó correctamente. Código de retorno: {proceso.returncode}")
+            print(f"Errores: {proceso.stderr}")
     except subprocess.CalledProcessError as e:
-        print(f"Error al ejecutar SFC:\n", e.stderr)
+        print(f"Error al ejecutar SFC:\n {e.stderr}")
+    except Exception as e:
+        print(f"Error inesperado al ejecutar SFC: {e}")
 
 # Función para limpiar espacio libre en disco
 def Eliminacion_permanente():
@@ -163,5 +186,6 @@ def main():
             print("Entrada no válida. Por favor, ingresa un número entero.")
 
 if __name__ == "__main__":
-    main()
+    ejecutar_como_admin()  # Verificar permisos de administrador
+    main()  # Ejecutar la función principal del programa
     input("Presiona Enter para cerrar la ventana...")
