@@ -122,7 +122,7 @@ def mostrar_espacio_disco():
         print()
 
 # Función para ejecutar SFC /scannow
-def ejecutar_sfc():
+def reparar_archivos_del_sistema():
     """Ejecuta el comando sfc /scannow para escanear y reparar archivos del sistema."""
     try:
         print("Ejecutando sfc /scannow... Esto puede tardar un tiempo.")
@@ -174,7 +174,7 @@ def main():
             elif seleccion == 8:
                 mostrar_espacio_disco()
             elif seleccion == 9:
-                ejecutar_sfc()
+                reparar_archivos_del_sistema()
             elif seleccion == 10:
                 Eliminacion_permanente()
             elif seleccion == 11:
