@@ -28,8 +28,8 @@ def print_menu():
     print("6. Generador de hash")
     print("7. Uso del sistema")
     print("8. Uso de discos")
-    print("9. Escanear y reparar archivos del sistema (SFC)")
-    print("10. Eliminacion permanente (CIPHER)")
+    print("9. Escanear y reparar archivos del sistema")
+    print("10. Eliminacion permanente")
     print("11. Salir")
 
 def mostrar_ip():
