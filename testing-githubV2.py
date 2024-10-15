@@ -30,7 +30,8 @@ def print_menu():
     print("8. Uso de discos")
     print("9. Escanear y reparar archivos del sistema")
     print("10. Eliminacion permanente")
-    print("11. Salir")
+    print("11. Mostrar información DNS")
+    print("12. Salir")
 
 def mostrar_ip():
     try:
@@ -110,23 +111,16 @@ def mostrar_espacio_disco():
     particiones = psutil.disk_partitions()
 
     for particion in particiones:
-        try:
-            uso_disco = psutil.disk_usage(particion.mountpoint)
-            
-            print(f"Partición: {particion.device}")
-            print(f"  Punto de montaje: {particion.mountpoint}")
-            print(f"  Sistema de archivos: {particion.fstype}")
-            print(f"  Espacio total: {uso_disco.total / (1024 ** 3):.2f} GB")
-            print(f"  Espacio utilizado: {uso_disco.used / (1024 ** 3):.2f} GB")
-            print(f"  Espacio disponible: {uso_disco.free / (1024 ** 3):.2f} GB")
-            print(f"  Porcentaje utilizado: {uso_disco.percent}%")
-            print()
-        except PermissionError:
-            print(f"No se puede acceder a la partición: {particion.device}. Permiso denegado.")
-        except FileNotFoundError:
-            print(f"Partición no encontrada: {particion.device}.")
-        except Exception as e:
-            print(f"Ocurrió un error al intentar acceder a la partición {particion.device}: {e}")
+        uso_disco = psutil.disk_usage(particion.mountpoint)
+        
+        print(f"Partición: {particion.device}")
+        print(f"  Punto de montaje: {particion.mountpoint}")
+        print(f"  Sistema de archivos: {uso_disco.fstype}")
+        print(f"  Espacio total: {uso_disco.total / (1024 ** 3):.2f} GB")
+        print(f"  Espacio utilizado: {uso_disco.used / (1024 ** 3):.2f} GB")
+        print(f"  Espacio disponible: {uso_disco.free / (1024 ** 3):.2f} GB")
+        print(f"  Porcentaje utilizado: {uso_disco.percent}%")
+        print()
 
 # Función para ejecutar SFC /scannow
 def reparar_archivos_del_sistema():
@@ -159,6 +153,25 @@ def Eliminacion_permanente():
     except subprocess.CalledProcessError as e:
         print(f"Error al ejecutar CIPHER en {ruta}:\n", e.stderr)
 
+# Función para mostrar información DNS
+def mostrar_dns():
+    """Muestra la configuración del DNS y el contenido de la caché DNS."""
+    try:
+        # Mostrar la configuración DNS de un dominio (por ejemplo, www.google.com)
+        dominio = input("Introduce el nombre de dominio para realizar nslookup (ejemplo: google.com): ")
+        print(f"Realizando nslookup para {dominio}...")
+        result_nslookup = subprocess.run(['nslookup', dominio], capture_output=True, text=True, check=True)
+        print(result_nslookup.stdout)
+        
+        # Mostrar la caché DNS
+        print("Mostrando la caché DNS local...")
+        result_displaydns = subprocess.run(['ipconfig', '/displaydns'], capture_output=True, text=True, check=True)
+        print(result_displaydns.stdout)
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error al ejecutar el comando: {e}")
+
+# Menú principal
 def main():
     while True:
         print_menu()
@@ -185,6 +198,8 @@ def main():
             elif seleccion == 10:
                 Eliminacion_permanente()
             elif seleccion == 11:
+                mostrar_dns()
+            elif seleccion == 12:
                 print("Saliendo del programa...")
                 break
             else:
